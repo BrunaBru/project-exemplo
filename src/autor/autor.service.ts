@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { AutorEntity } from "./autor.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { AutorDto } from "./autor.autorDto";
 
 @Injectable()
 export class AutorService{
@@ -26,6 +27,16 @@ export class AutorService{
     async remove(id:string){
         const findById = await this.findById(id);
         await this.autorRepository.remove(findById);
-        return { id, ...findById};
+        return { ...findById, id};
+    }
+
+    async create(dto:AutorDto){
+        const newAutor = this.autorRepository.create(dto);
+        return this.autorRepository.save(newAutor);
+    }
+
+    async update({id, ...dto} : AutorDto){
+        await this.findById(id);
+        return this.autorRepository.save({id, ...dto});
     }
 }
